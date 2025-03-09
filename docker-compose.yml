@@ -7,11 +7,18 @@ services:
     ports:
       - 4000:4000
     container_name: pa11y-dashboard
+  labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pa11y.rule=Host(`pa11y-dashboard.inet-solutions.at`)"
+      - "traefik.http.routers.pa11y.entrypoints=websecure"
+      - "traefik.http.routers.pa11y.tls=true"
+      - "traefik.http.services.pa11y.loadbalancer.server.port=4000"
   mongo:
     image: mongo:4.4
     ports:
       - "27017:27017"
     volumes:
       - mongodb:/data/db
+
 volumes:
   mongodb:
