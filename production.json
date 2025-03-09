@@ -3,13 +3,12 @@
   "noindex": true,
   "readonly": false,
   "webservice": {
-    "database": "mongodb://mongo:PAmongodb11Y@pa11y-pa11y-mongodb-zpdssw:27017/pa11y-webservice?authSource=admin",
-    "host": "localhost",
+    "host": "0.0.0.0",
     "port": 3000,
+    "database": "mongodb://mongo:PAmongodb11Y@pa11y-pa11y-mongodb-zpdssw:27017/pa11y-webservice?authSource=admin",
     "cron": "0 30 0 * * *",
     "chromeLaunchConfig": {
-       "args": ["--no-sandbox"]
+       "args": ["--no-sandbox", "--disable-setuid-sandbox", "--disable-dev-shm-usage"]
     }
-
   }
 }
