@@ -1,7 +1,14 @@
-FROM alekzonder/puppeteer:latest
+FROM node:18-bullseye-slim
 
-# Install Node dependencies
-RUN apt-get update && apt-get install -y git
+# Install Chrome and dependencies
+RUN apt-get update && \
+    apt-get install -y wget gnupg git && \
+    wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - && \
+    echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list && \
+    apt-get update && \
+    apt-get install -y google-chrome-stable && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Clone the repositories
 RUN git clone https://github.com/pa11y/dashboard.git /dashboard && \
@@ -14,9 +21,8 @@ RUN npm install
 WORKDIR /pa11y-webservice
 RUN npm install
 
-# Setup configs
-RUN mkdir -p /dashboard/config && \
-    mkdir -p /pa11y-webservice/config 
+# Create config directories
+RUN mkdir -p /dashboard/config /pa11y-webservice/config
 
 # Create start script
 RUN echo '#!/bin/bash \n\
