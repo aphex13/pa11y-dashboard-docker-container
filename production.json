@@ -3,7 +3,7 @@
   "noindex": true,
   "readonly": false,
   "webservice": {
-    "host": "0.0.0.0",
+    "host": "localhost",
     "port": 3000,
     "database": "mongodb://mongo:PAmongodb11Y@pa11y-pa11y-mongodb-zpdssw:27017/pa11y-webservice?authSource=admin",
     "cron": "0 30 0 * * *",
