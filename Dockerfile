@@ -1,9 +1,31 @@
-FROM node:18-bullseye-slim
-# Dependencies are required to run puppeteer
-RUN apt-get update -y && apt-get upgrade -y && apt-get install -y libnss3 libgconf-2-4 gconf-service libasound2 libatk1.0-0 libc6 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget net-tools git
-RUN git clone https://github.com/pa11y/dashboard.git && cd dashboard && npm i
-# this is required because it loads the correct configuration file
-ENV NODE_ENV=production
-COPY production.json /dashboard/config/production.json
+FROM alekzonder/puppeteer:latest
+
+# Install Node dependencies
+RUN apt-get update && apt-get install -y git
+
+# Clone the repositories
+RUN git clone https://github.com/pa11y/dashboard.git /dashboard && \
+    git clone https://github.com/pa11y/pa11y-webservice.git /pa11y-webservice
+
+# Install dependencies
 WORKDIR /dashboard
-CMD PORT=4o00 node index.js
+RUN npm install
+
+WORKDIR /pa11y-webservice
+RUN npm install
+
+# Setup configs
+RUN mkdir -p /dashboard/config && \
+    mkdir -p /pa11y-webservice/config 
+
+# Create start script
+RUN echo '#!/bin/bash \n\
+cd /pa11y-webservice \n\
+NODE_ENV=production node index.js & \n\
+sleep 5 \n\
+cd /dashboard \n\
+NODE_ENV=production node index.js' > /start.sh && \
+chmod +x /start.sh
+
+ENV NODE_ENV=production
+CMD ["/start.sh"]
